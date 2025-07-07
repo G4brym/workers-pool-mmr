@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnookerSkillz - Leaderboard & Matches</title>
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1920px; /* Optimized for large screens like TVs */
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        header h1 {
+            font-size: 5rem; /* Larger font for TV visibility */
+            color: #00ddeb;
+            text-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+            margin-bottom: 20px;
+        }
+
+        header p {
+            font-size: 2rem;
+            color: #a0a0a0;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Matches on left, players on right */
+            gap: 40px;
+            flex-grow: 1;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .section h2 {
+            font-size: 3rem;
+            color: #00ddeb;
+            margin-bottom: 30px;
+        }
+
+        .matches-grid, .players-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .match-card, .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 221, 235, 0.2);
+        }
+
+        .match-card:hover, .player-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px rgba(0, 221, 235, 0.3);
+        }
+
+        .match-card h3 {
+            color: #ffffff;
+            font-size: 2rem; /* Larger for TV */
+            margin-bottom: 15px;
+        }
+
+        .match-card p, .player-card p {
+            color: #b0b0b0;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .player-card {
+            text-align: center;
+        }
+
+        .player-card h3 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .player-card .mmr {
+            color: #00ddeb;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background: #00ddeb;
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Scrollbar styling for large screens */
+        .section::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .section::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .section::-webkit-scrollbar-thumb {
+            background: #00ddeb;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 1366px) { /* Adjust for smaller TVs or screens */
+            header h1 {
+                font-size: 4rem;
+            }
+
+            .section h2 {
+                font-size: 2.5rem;
+            }
+
+            .match-card h3, .player-card h3 {
+                font-size: 1.8rem;
+            }
+
+            .match-card p, .player-card p {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body
+    hx-get="/"
+    hx-trigger="every 10s"
+    hx-swap="outerHTML"
+>
+    <div class="container">
+        <header>
+            <h1>SnookerSkillz Arena</h1>
+            <p>Epic snooker battles and top players on display!</p>
+        </header>
+
+        <div class="main-content">
+            <section class="section">
+                <h2>Recent Matches</h2>
+                <div class="matches-grid">
+                    {% for match in recent_matches %}
+                    <div class="match-card">
+                        <h3>
+                            {% if match.team1_player2 %}
+                                {{ match.team1_player1.name }} & {{ match.team1_player2.name }}
+                            {% else %}
+                                {{ match.team1_player1.name }}
+                            {% endif %}
+                            vs
+                            {% if match.team2_player2 %}
+                                {{ match.team2_player1.name }} & {{ match.team2_player2.name }}
+                            {% else %}
+                                {{ match.team2_player1.name }}
+                            {% endif %}
+                        </h3>
+                        <p>Score: {{ match.team1_score }}-{{ match.team2_score }} ({{ match.get_match_format_display }})</p>
+                        <p>Type: {{ match.get_match_type_display }}{% if not match.is_ranked %} (Friendly){% endif %}</p>
+                        <p>Date: {{ match.date_played|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                    {% empty %}
+                    <p>No matches recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Top 10 Players</h2>
+                <div class="players-grid">
+                    {% for player in top_players %}
+                    <div class="player-card">
+                        <div class="rank-badge">{{ forloop.counter }}</div>
+                        <h3>{{ player.name }}</h3>
+                        <p class="mmr">{{ player.mmr }} MMR</p>
+                        <p>Matches: {{ player.match_count }}</p>
+                    </div>
+                    {% empty %}
+                    <p>No players registered yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

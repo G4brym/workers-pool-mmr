@@ -1,0 +1,37 @@
+{
+  "name": "snooker-skillz",
+  "main": "src/worker.py",
+  "account_id": "54ffb7a8c5bf288464e7dfbe082889e7",
+  "compatibility_flags": [
+    "python_workers",
+    "python_workers_20250116"
+  ],
+  "compatibility_date": "2025-04-10",
+  "assets": {
+    "directory": "./staticfiles"
+  },
+  "build": {
+    "command": "python src/manage.py collectstatic --noinput"
+  },
+  "rules": [
+    {
+      "globs": [
+        "vendor/**/*.txt.gz",
+        // "vendor/**/*.mo",  only required for enabling translations, but requires workers paid plan
+        "vendor/tzdata/**/"
+      ],
+      "type": "Data",
+      "fallthrough": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "snooker-skillz",
+      "database_id": "6be6730b-c9ac-4613-99c5-b4406f6e822e"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
