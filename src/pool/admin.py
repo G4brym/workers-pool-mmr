@@ -43,10 +43,9 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ('get_match_description', 'match_type', 'match_format', 'is_ranked', 'date_played')
+    list_display = ('get_match_description', 'match_type', 'match_format', 'is_ranked')
     list_filter = ('match_type', 'match_format', 'is_ranked')
     search_fields = ('team1_player1__name', 'team1_player2__name', 'team2_player1__name', 'team2_player2__name')
-    date_hierarchy = 'date_played'
     list_per_page = 20
 
     def get_match_description(self, obj):

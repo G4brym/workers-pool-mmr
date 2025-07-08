@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 class Player(models.Model):
@@ -31,7 +32,7 @@ class Match(models.Model):
     match_type = models.CharField(max_length=3, choices=MATCH_TYPE_CHOICES)
     match_format = models.CharField(max_length=3, choices=MATCH_FORMAT_CHOICES)
     is_ranked = models.BooleanField(default=True, verbose_name='Ranked Match')
-    date_played = models.DateTimeField(auto_now_add=True)
+    date_played = models.DateTimeField(null=True, blank=True, default=timezone.now)
 
     # Team 1 players (can be 1 or 2 players)
     team1_player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='team1_matches_p1',
@@ -73,9 +74,9 @@ class Match(models.Model):
                 raise ValidationError("2v2 Battle matches must have two players per team.")
 
         # Validate scores based on match format
-        max_scores = {'BO1': 1, 'BO3': 2, 'BO5': 3}
+        max_scores = {'BO1': 1, 'BO3': 3, 'BO5': 5}
         max_score = max_scores[self.match_format]
-        if self.team1_score + self.team2_score > max_score or max(self.team1_score, self.team2_score) > max_score:
+        if (self.team1_score + self.team2_score) > max_score or max(self.team1_score, self.team2_score) > max_score:
             raise ValidationError(
                 f"Scores for {self.match_format} must sum to at most {max_score} and neither team can exceed {max_score}.")
 

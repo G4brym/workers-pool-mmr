@@ -15,6 +15,9 @@ def landing_page(request):
                     Count('team2_matches_p2')
     ).order_by('-mmr', 'name')[:10]
 
+    top_players = list(top_players)  # Converts to list
+    top_players.reverse()  # Reverses the list in Python
+
     context = {
         'recent_matches': recent_matches,
         'top_players': top_players,
