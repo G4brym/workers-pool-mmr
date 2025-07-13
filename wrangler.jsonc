@@ -6,6 +6,7 @@
     "python_workers",
     "python_workers_20250116"
   ],
+  "workers_dev": false,
   "compatibility_date": "2025-04-10",
   "assets": {
     "directory": "./staticfiles"

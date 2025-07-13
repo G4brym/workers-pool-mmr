@@ -136,9 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CLOUDFLARE_ACCESS_TEAM_NAME = 'kickstart-playground'
 CLOUDFLARE_ACCESS_CACHE_TIMEOUT = 3600  # Cache timeout for public keys (seconds)
-CLOUDFLARE_ACCESS_EXEMPT_PATHS = [
-    "/"
-]
+CLOUDFLARE_ACCESS_EXEMPT_PATHS = []
 
 LOGGING = {
     'version': 1,
